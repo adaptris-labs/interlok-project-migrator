@@ -18,6 +18,6 @@ BUILD SUCCESSFUL in 11s
 ```
 
 ```
-$ ./build/staged/bin/interlok-project-conveter  ./interlok-continuous-delivery/src/main/dist/config/adapter.xml ./interlok-continuous-delivery/src/main/dist/config/variables.properties
+$ ./build/staged/bin/interlok-project-conveter  /c/interlok/config/adapter.xml /c/interlok/config/variables.properties
 Written to [C:\repo\code\adaptris\other\interlok-project-converter\.\build\staged\config-project.json]
 ```
