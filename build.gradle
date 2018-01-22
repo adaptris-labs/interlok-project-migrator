@@ -1,0 +1,44 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+run.enabled = false
+
+// Also don't need the regular application distribution packages since
+// this is just a set of samples. So disabling to make the build output
+// cleaner
+distTar.enabled=false
+distZip.enabled=false
+
+applicationName = 'interlok-project-conveter'
+version = ''
+
+jar {
+	baseName = 'interlok-project-conveter'
+    version =  version
+    manifest {
+        attributes 'Implementation-Title': 'Interlok Project Converter',
+                   'Implementation-Version': version
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+startScripts {
+    mainClassName = 'com.adaptris.utils.ProjectConverter'
+}
+
+installDist {
+    destinationDir = new File(project.buildDir, 'staged')
+}
+
+assemble.dependsOn installDist
