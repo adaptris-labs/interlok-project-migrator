@@ -1,4 +1,4 @@
-# interlok-project-migrator
+# interlok-project-migrator [![Build Status](https://travis-ci.org/adaptris/interlok-project-migrator.svg?branch=develop)](https://travis-ci.org/adaptris/interlok-project-migrator)
 
 Helper application that allows you to convert Interlok xml and variables into a project zip (introduced in 3.7).
 
