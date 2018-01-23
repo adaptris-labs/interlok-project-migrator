@@ -23,7 +23,7 @@ public class XpathUtils {
 
   private static final String UNIQUE_ID_KEY = "unique-id";
 
-  private static final String[] UNIQUE_ID_TO_SKIP = {"adapter", "service-collection", "shared-components", "channel-list", "workflow-list"};
+  private static final String[] UNIQUE_ID_PARENT = {"channel-list", "workflow-list", "services", "connections"};
 
   private XpathUtils(){
   }
@@ -85,7 +85,7 @@ public class XpathUtils {
       Node child = node.getChildNodes().item(i);
       if(child instanceof Element){
         if (child.getNodeName().equals(UNIQUE_ID_KEY)){
-          if (!Arrays.asList(UNIQUE_ID_TO_SKIP).contains(node.getNodeName())) {
+          if (Arrays.asList(UNIQUE_ID_PARENT).contains(node.getParentNode().getNodeName())) {
             uniqueId = child.getTextContent();
           }
         }

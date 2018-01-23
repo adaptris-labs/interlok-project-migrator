@@ -46,9 +46,7 @@ public class ProjectConverter {
 
   private static final String DEFAULT_PROJECT = "project";
 
-
-
-  public ProjectConverter(){
+  ProjectConverter(){
     options = new Options();
     options.addOption("h",HELP_ARG, false, "Displays this.." );
     options.addOption("p", PROJECT_ARG, true, "The project name");
@@ -65,7 +63,7 @@ public class ProjectConverter {
     projectConverter.convert();
   }
 
-  private void arguments(String... args){
+  void arguments(String... args){
     CommandLineParser parser = new DefaultParser();
     try {
       CommandLine line = parser.parse(options, args);
@@ -85,7 +83,7 @@ public class ProjectConverter {
     }
   }
 
-  private void convert() throws IOException, ParserConfigurationException, SAXException, ArchiveException, TransformerException {
+  void convert() throws IOException, ParserConfigurationException, SAXException, ArchiveException, TransformerException {
     String xml = XmlUtils.resolveXincludes(readFile(adapterPath, StandardCharsets.UTF_8));
     Map<String, String> variables = new HashMap<>();
     for (String arg : variablesPaths){
@@ -105,7 +103,7 @@ public class ProjectConverter {
     System.out.println(String.format("Written to [%s]", zipFile.getAbsolutePath()));
   }
 
-  public Map<String, String> convert(String xml, Map<String, String> variables) throws ParserConfigurationException, SAXException, IOException {
+  Map<String, String> convert(String xml, Map<String, String> variables) throws ParserConfigurationException, SAXException, IOException {
     Map<String, String> map = new HashMap<>();
     for (Map.Entry<String, String> entry : variables.entrySet()) {
       List<String> xpaths = XpathUtils.getXPath(xml, String.format(PREFIX + "%s" + SUFFIX, entry.getKey()));
@@ -116,18 +114,18 @@ public class ProjectConverter {
     return map;
   }
 
-  private void usage(){
+  void usage(){
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp( "interlok-project-conveter", options );
     System.exit(1);
   }
 
-  private String readFile(String path, Charset encoding) throws IOException {
+  String readFile(String path, Charset encoding) throws IOException {
     byte[] encoded = Files.readAllBytes(Paths.get(path));
     return new String(encoded, encoding);
   }
 
-  private Map<String, String> loadProperties(String path) throws IOException {
+  Map<String, String> loadProperties(String path) throws IOException {
     Properties properties = new Properties();
     try (InputStream input = new FileInputStream(path)){
       properties.load(input);
@@ -139,7 +137,7 @@ public class ProjectConverter {
     return results;
   }
 
-  private void writeProperties(File destination, Map<String, String> variables) throws IOException {
+  void writeProperties(File destination, Map<String, String> variables) throws IOException {
     Properties prop = new Properties();
     prop.putAll(variables);
     try (OutputStream output = new FileOutputStream(destination)) {

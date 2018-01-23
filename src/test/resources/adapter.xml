@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<adapter>
+  <unique-id>MyFirstAdapter</unique-id>
+  <start-up-event-imp>com.adaptris.core.event.StandardAdapterStartUpEvent</start-up-event-imp>
+  <heartbeat-event-imp>com.adaptris.core.HeartbeatEvent</heartbeat-event-imp>
+  <log-handler class="null-log-handler">
+    <unique-id>zen-raman</unique-id>
+  </log-handler>
+  <shared-components>
+    <connections>
+      <jms-connection>
+        <connection-error-handler class="jms-connection-error-handler"/>
+        <unique-id>jms-connection-SonicMQ</unique-id>
+        <connection-attempts>-1</connection-attempts>
+        <connection-retry-interval>
+          <unit>MILLISECONDS</unit>
+          <interval>${SONIC_CONNECTION_WAIT}</interval>
+        </connection-retry-interval>
+        <user-name>${SONIC_USERNAME}</user-name>
+        <password>${SONIC_PASSWORD}</password>
+        <client-id>${SONIC_CLIENT_ID}</client-id>
+        <additional-debug>true</additional-debug>
+        <vendor-implementation class="advanced-sonic-mq-implementation">
+          <broker-url>${SONIC_HOST}</broker-url>
+          <connect-id>${SONIC_DOMAIN}</connect-id>
+          <connection-factory-properties>
+            <key-value-pair>
+              <key>MaxDeliveryCount</key>
+              <value>2</value>
+            </key-value-pair>
+          </connection-factory-properties>
+          <session-properties/>
+        </vendor-implementation>
+      </jms-connection>
+      <jms-connection>
+        <connection-error-handler class="jms-connection-error-handler"/>
+        <unique-id>jms-connection-AMQ</unique-id>
+        <connection-attempts>-1</connection-attempts>
+        <connection-retry-interval>
+          <unit>SECONDS</unit>
+          <interval>5</interval>
+        </connection-retry-interval>
+        <user-name>${AMQ_USERNAME}</user-name>
+        <password>${AMQ_PASSWORD}</password>
+        <additional-debug>true</additional-debug>
+        <vendor-implementation class="basic-active-mq-implementation">
+          <broker-url>${AMQ_HOST}</broker-url>
+        </vendor-implementation>
+      </jms-connection>
+    </connections>
+    <services/>
+    <unique-id>lonely-heyrovsky</unique-id>
+  </shared-components>
+  <event-handler class="default-event-handler">
+    <unique-id>DefaultEventHandler</unique-id>
+    <connection class="null-connection">
+      <unique-id>desperate-babbage</unique-id>
+    </connection>
+    <producer class="null-message-producer">
+      <unique-id>eager-morse</unique-id>
+    </producer>
+  </event-handler>
+  <message-error-handler class="null-processing-exception-handler">
+    <unique-id>agitated-raman</unique-id>
+  </message-error-handler>
+  <failed-message-retrier class="no-retries">
+    <unique-id>pensive-mahavira</unique-id>
+  </failed-message-retrier>
+  <channel-list>
+    <channel>
+      <consume-connection class="null-connection">
+        <unique-id>thirsty-swartz</unique-id>
+      </consume-connection>
+      <produce-connection class="shared-connection">
+        <lookup-name>jms-connection-SonicMQ</lookup-name>
+      </produce-connection>
+      <workflow-list>
+        <standard-workflow>
+          <consumer class="fs-consumer">
+            <unique-id>stupefied-raman</unique-id>
+            <destination class="configured-consume-destination">
+              <destination>./msgs/in</destination>
+            </destination>
+            <poller class="fixed-interval-poller">
+              <unique-id>sleepy-hodgkin</unique-id>
+            </poller>
+            <create-dirs>true</create-dirs>
+            <file-sorter class="fs-sort-none"/>
+            <wip-suffix>.wip</wip-suffix>
+          </consumer>
+          <service-collection class="service-list">
+            <unique-id>drunk-wright</unique-id>
+            <services>
+              <xpath-metadata-service>
+                <unique-id>agitated-raman</unique-id>
+                <xpath-query class="configured-xpath-query">
+                  <metadata-key>customerId</metadata-key>
+                  <xpath-query>/order/customer/customerId</xpath-query>
+                </xpath-query>
+                <xpath-query class="configured-xpath-query">
+                  <metadata-key>orderNumber</metadata-key>
+                  <xpath-query>/order/order/number</xpath-query>
+                </xpath-query>
+              </xpath-metadata-service>
+              <add-metadata-service>
+                <unique-id>kickass-lamarr</unique-id>
+                <metadata-element>
+                  <key>addressFirstLine</key>
+                  <value>Flat 12</value>
+                </metadata-element>
+                <metadata-element>
+                  <key>addressSecondLine</key>
+                  <value>112 Edinburgh Road</value>
+                </metadata-element>
+                <metadata-element>
+                  <key>postCode</key>
+                  <value>W5 4LD</value>
+                </metadata-element>
+                <metadata-element>
+                  <key>tmp_fileSuffix</key>
+                  <value>.xml</value>
+                </metadata-element>
+              </add-metadata-service>
+              <metadata-appender-service>
+                <unique-id>agitated-agnesi</unique-id>
+                <append-key>orderNumber</append-key>
+                <append-key>tmp_fileSuffix</append-key>
+                <result-key>fileName</result-key>
+              </metadata-appender-service>
+              <metadata-filter-service>
+                <unique-id>peaceful-jang</unique-id>
+                <filter class="regex-metadata-filter">
+                  <exclude-pattern>tmp.*</exclude-pattern>
+                </filter>
+              </metadata-filter-service>
+              <xml-transform-service>
+                <unique-id>sad-sinoussi</unique-id>
+                <url>./mappings/e6-orderEnricher.xsl</url>
+                <metadata-key>transformurl</metadata-key>
+                <xml-transformer-factory class="xslt-transformer-factory">
+                  <transformer-factory-attributes/>
+                  <transformer-factory-features/>
+                </xml-transformer-factory>
+                <transform-parameter class="xml-transform-string-parameter">
+                  <metadata-filter>
+                    <include-pattern>.*</include-pattern>
+                  </metadata-filter>
+                </transform-parameter>
+              </xml-transform-service>
+              <log-message-service>
+                <unique-id>jolly-brattain</unique-id>
+                <include-payload>true</include-payload>
+                <include-events>true</include-events>
+                <log-level>DEBUG</log-level>
+              </log-message-service>
+            </services>
+          </service-collection>
+          <producer class="jms-queue-producer">
+            <unique-id>PtpProducerToSonicMQ</unique-id>
+            <destination class="configured-produce-destination">
+              <destination>${SONIC_QUEUE}</destination>
+            </destination>
+            <acknowledge-mode>CLIENT_ACKNOWLEDGE</acknowledge-mode>
+            <message-translator class="sonic-xml-message-translator">
+              <xml-encoding>UTF-8</xml-encoding>
+            </message-translator>
+            <correlation-id-source class="null-correlation-id-source"/>
+            <delivery-mode>PERSISTENT</delivery-mode>
+            <priority>4</priority>
+            <ttl>0</ttl>
+            <per-message-properties>false</per-message-properties>
+            <session-factory class="jms-default-producer-session"/>
+          </producer>
+          <produce-exception-handler class="null-produce-exception-handler"/>
+          <unique-id>pedantic-lovelace</unique-id>
+          <message-metrics-interceptor>
+            <unique-id>pedantic-lovelace</unique-id>
+            <timeslice-duration>
+              <unit>MINUTES</unit>
+              <interval>5</interval>
+            </timeslice-duration>
+            <timeslice-history-count>12</timeslice-history-count>
+          </message-metrics-interceptor>
+          <in-flight-workflow-interceptor>
+            <unique-id>pedantic-lovelace</unique-id>
+          </in-flight-workflow-interceptor>
+        </standard-workflow>
+        <unique-id>distracted-mcnulty</unique-id>
+      </workflow-list>
+      <unique-id>sleepy-murdock</unique-id>
+      <auto-start>true</auto-start>
+    </channel>
+    <unique-id>desperate-gates</unique-id>
+  </channel-list>
+  <message-error-digester class="standard-message-error-digester">
+    <unique-id>ErrorDigest</unique-id>
+    <digest-max-size>100</digest-max-size>
+  </message-error-digester>
+</adapter>
