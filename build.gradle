@@ -1,11 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'jacoco'
 
 run.enabled = false
-
-// Also don't need the regular application distribution packages since
-// this is just a set of samples. So disabling to make the build output
-// cleaner
 distTar.enabled=false
 distZip.enabled=false
 
@@ -44,3 +41,16 @@ installDist {
 }
 
 assemble.dependsOn installDist
+
+jacoco {
+  toolVersion="0.7.7.201606060606"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+check.dependsOn jacocoTestReport
