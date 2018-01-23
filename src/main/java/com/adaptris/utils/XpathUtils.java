@@ -23,7 +23,7 @@ public class XpathUtils {
 
   private static final String UNIQUE_ID_KEY = "unique-id";
 
-  private static final String[] UNIQUE_ID_TO_SKIP = {"adapter", "service-collection"};
+  private static final String[] UNIQUE_ID_TO_SKIP = {"adapter", "service-collection", "shared-components"};
 
   private XpathUtils(){
   }
