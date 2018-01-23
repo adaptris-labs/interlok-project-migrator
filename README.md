@@ -1,6 +1,6 @@
 # interlok-project-migrator
 
-This project is helper that allows you to convert Interlok xml and variables into a project zip (introduced in 3.7).
+Helper application that allows you to convert Interlok xml and variables into a project zip (introduced in 3.7).
 
 ## Build
 ```
