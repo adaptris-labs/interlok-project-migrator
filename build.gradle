@@ -16,7 +16,7 @@ jar {
 	baseName = 'interlok-project-conveter'
     version =  version
     manifest {
-        attributes 'Implementation-Title': 'Interlok Project Converter',
+        attributes 'Implementation-Title': 'Interlok Project Migrator',
                    'Implementation-Version': version
     }
 }
@@ -36,7 +36,7 @@ dependencies {
 }
 
 startScripts {
-    mainClassName = 'com.adaptris.utils.ProjectConverter'
+    mainClassName = 'com.adaptris.utils.ProjectMigrator'
 }
 
 installDist {

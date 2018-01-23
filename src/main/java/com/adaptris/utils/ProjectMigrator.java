@@ -21,7 +21,7 @@ import java.util.Properties;
 /**
  * @author mwarman
  */
-public class ProjectConverter {
+public class ProjectMigrator {
 
   private Options options;
 
@@ -46,7 +46,7 @@ public class ProjectConverter {
 
   private static final String DEFAULT_PROJECT = "project";
 
-  ProjectConverter(){
+  ProjectMigrator(){
     options = new Options();
     options.addOption("h",HELP_ARG, false, "Displays this.." );
     options.addOption("p", PROJECT_ARG, true, "The project name");
@@ -58,9 +58,9 @@ public class ProjectConverter {
   }
 
   public static void main(String... args) throws Exception {
-    ProjectConverter projectConverter = new ProjectConverter();
-    projectConverter.arguments(args);
-    projectConverter.convert();
+    ProjectMigrator projectMigrator = new ProjectMigrator();
+    projectMigrator.arguments(args);
+    projectMigrator.convert();
   }
 
   void arguments(String... args){
