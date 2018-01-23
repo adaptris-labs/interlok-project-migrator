@@ -1,12 +1,13 @@
 package com.adaptris.utils;
 
+import org.apache.commons.cli.*;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -22,43 +23,89 @@ import java.util.Properties;
  */
 public class ProjectConverter {
 
+  private Options options;
+
+  private String project;
+  private String adapterPath;
+  private String[] variablesPaths;
+
   private static final String PREFIX = "${";
   private static final String SUFFIX = "}";
+  
+  private static final String OUTPUT_DIRECTORY = "./build/staged/";
+  private static final String BUILD_DIRECTORY  = OUTPUT_DIRECTORY + "build/";
+  private static final String ADAPTER_FILE     = "adapter.xml";
+  private static final String VARIABLES_FILE   = "variables.properties";
+  private static final String CONFIG_FILE      = "config-project.json";
+  private static final String PROJECT_EXT      = ".zip";
+
+  private static final String HELP_ARG = "help";
+  private static final String PROJECT_ARG = "project";
+  private static final String ADAPTER_ARG = "adapter";
+  private static final String VARIABLES_ARG = "variables";
+
+  private static final String DEFAULT_PROJECT = "project";
+
 
 
   public ProjectConverter(){
+    options = new Options();
+    options.addOption("h",HELP_ARG, false, "Displays this.." );
+    options.addOption("p", PROJECT_ARG, true, "The project name");
+    options.addRequiredOption("a", ADAPTER_ARG, true, "(required) The adapter xml");
+    Option option = new Option("v", VARIABLES_ARG, true, "(required) The variables (can be added multiple times)");
+    option.setArgs(Option.UNLIMITED_VALUES);
+    option.setRequired(true);
+    options.addOption(option);
   }
 
-  public static void main(String... args) throws IOException, ParserConfigurationException, SAXException, ArchiveException {
+  public static void main(String... args) throws Exception {
     ProjectConverter projectConverter = new ProjectConverter();
-    projectConverter.convert(args);
+    projectConverter.arguments(args);
+    projectConverter.convert();
   }
 
-  private void convert(String... args) throws IOException, ParserConfigurationException, SAXException, ArchiveException {
-    if (args.length < 2){
+  private void arguments(String... args){
+    CommandLineParser parser = new DefaultParser();
+    try {
+      CommandLine line = parser.parse(options, args);
+      if(line.hasOption(HELP_ARG)){
+        usage();
+      }
+      if (line.hasOption(PROJECT_ARG)) {
+        project = line.getOptionValue(PROJECT_ARG);
+      } else {
+        project = DEFAULT_PROJECT;
+      }
+      adapterPath = line.getOptionValue(ADAPTER_ARG);
+      variablesPaths = line.getOptionValues(VARIABLES_ARG);
+    } catch (ParseException e) {
+      System.err.println("Parsing failed.  Reason: " + e.getMessage());
       usage();
     }
-    String xml = readFile(args[0], StandardCharsets.UTF_8);
+  }
+
+  private void convert() throws IOException, ParserConfigurationException, SAXException, ArchiveException, TransformerException {
+    String xml = XmlUtils.resolveXincludes(readFile(adapterPath, StandardCharsets.UTF_8));
     Map<String, String> variables = new HashMap<>();
-    boolean first = true;
-    for (String arg : args){
-      if (first){
-        first = false;
-        continue;
-      }
+    for (String arg : variablesPaths){
       variables.putAll(loadProperties(arg));
     }
-    File variablesFile = new File("./build/staged/variables.properties");
+    File buildDirectory = new File(BUILD_DIRECTORY);
+    buildDirectory.mkdir();
+    File adapterFile = new File(buildDirectory, ADAPTER_FILE);
+    File variablesFile = new File(buildDirectory, VARIABLES_FILE);
     writeProperties(variablesFile, variables);
     Map<String, String> variableXPaths = convert(xml, variables);
-    File projectJson = new File("./build/staged/config-project.json");
-    FileUtils.writeStringToFile(projectJson, createJson("project", variableXPaths), StandardCharsets.UTF_8);
-    File zipFile = new File("./build/staged/project.zip");
-    ZipUtils.addFilesToZip(zipFile, projectJson, new File(args[0]), variablesFile);
+    File projectJson = new File(buildDirectory, CONFIG_FILE);
+    FileUtils.writeStringToFile(projectJson, createJson(project, variableXPaths), StandardCharsets.UTF_8);
+    FileUtils.writeStringToFile(adapterFile, xml , StandardCharsets.UTF_8);
+    File zipFile = new File(OUTPUT_DIRECTORY + project + PROJECT_EXT);
+    ZipUtils.addFilesToZip(zipFile, projectJson, variablesFile, adapterFile);
     System.out.println(String.format("Written to [%s]", zipFile.getAbsolutePath()));
   }
 
-  public Map<String, String> convert(String xml, Map<String, String > variables) throws ParserConfigurationException, SAXException, IOException {
+  public Map<String, String> convert(String xml, Map<String, String> variables) throws ParserConfigurationException, SAXException, IOException {
     Map<String, String> map = new HashMap<>();
     for (Map.Entry<String, String> entry : variables.entrySet()) {
       List<String> xpaths = XpathUtils.getXPath(xml, String.format(PREFIX + "%s" + SUFFIX, entry.getKey()));
@@ -70,12 +117,12 @@ public class ProjectConverter {
   }
 
   private void usage(){
-    System.out.println("./interlok-project-conveter <adapter-xml> <variable-substitutions> <variable-substitutions..>");
+    HelpFormatter formatter = new HelpFormatter();
+    formatter.printHelp( "interlok-project-conveter", options );
     System.exit(1);
   }
 
-  private String readFile(String path, Charset encoding) throws IOException
-  {
+  private String readFile(String path, Charset encoding) throws IOException {
     byte[] encoded = Files.readAllBytes(Paths.get(path));
     return new String(encoded, encoding);
   }
