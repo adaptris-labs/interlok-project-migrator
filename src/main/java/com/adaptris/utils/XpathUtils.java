@@ -51,20 +51,12 @@ public class XpathUtils {
   private static Node getXPath(Node root, String textContents, List<Node> foundNodes) {
     for (int i = 0; i < root.getChildNodes().getLength(); i++) {
       Node node = root.getChildNodes().item(i);
-      if (node instanceof Text){
-        if (((Text) node).getWholeText().equals(textContents)){
-          if(!foundNodes.contains(node.getParentNode())) {
-            return node.getParentNode();
-          } else {
-            return null;
-          }
-        }
-      } else if (node instanceof Element) {
-        if (node.getChildNodes().getLength() > 0) {
-          Node result = getXPath(node, textContents, foundNodes);
-          if (result != null) {
-            return result;
-          }
+      if (node instanceof Text && ((Text) node).getWholeText().equals(textContents) && !foundNodes.contains(node.getParentNode())){
+        return node.getParentNode();
+      } else if (node instanceof Element && node.getChildNodes().getLength() > 0) {
+        Node result = getXPath(node, textContents, foundNodes);
+        if (result != null) {
+          return result;
         }
       }
     }

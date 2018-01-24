@@ -22,12 +22,12 @@ BUILD SUCCESSFUL in 11s
 
 ## Execute
 ```
-./build/staged/bin/interlok-project-conveter -p MyInterlokInstance -a /c/interlok/config/adapter.xml -v /c/interlok/config/variables.properties
+./build/staged/bin/interlok-project-migrator -p MyInterlokInstance -a /c/interlok/config/adapter.xml -v /c/interlok/config/variables.properties
 ```
 
 ## Help
 ```
-$ ./build/staged/bin/interlok-project-conveter
+$ ./build/staged/bin/interlok-project-migrator
 Parsing failed.  Reason: Missing required options: a, v
 usage: interlok-project-conveter
  -a,--adapter <arg>     (required) The adapter xml

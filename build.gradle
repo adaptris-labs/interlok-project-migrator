@@ -6,11 +6,11 @@ run.enabled = false
 distTar.enabled=false
 distZip.enabled=false
 
-applicationName = 'interlok-project-conveter'
+applicationName = 'interlok-project-migrator'
 version = ''
 
 jar {
-	baseName = 'interlok-project-conveter'
+	baseName = 'interlok-project-migrator'
     version =  version
     manifest {
         attributes 'Implementation-Title': 'Interlok Project Migrator',

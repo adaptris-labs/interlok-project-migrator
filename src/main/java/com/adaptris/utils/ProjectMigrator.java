@@ -120,7 +120,7 @@ public class ProjectMigrator {
 
   void usage(){
     HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "interlok-project-conveter", options );
+    formatter.printHelp( "interlok-project-migrator", options );
     System.exit(1);
   }
 
