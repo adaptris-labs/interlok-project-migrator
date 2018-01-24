@@ -72,9 +72,6 @@ public class XpathUtils {
   }
 
   private static String generateXPath(Node node){
-    if(node == null){
-      return null;
-    }
     Node parent = node.getParentNode();
     if (parent == null)
     {

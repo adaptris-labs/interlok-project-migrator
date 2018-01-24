@@ -57,13 +57,17 @@ public class ProjectMigrator {
     options.addOption(option);
   }
 
-  public static void main(String... args) throws Exception {
+  public static void main(String[] args) throws Exception {
     ProjectMigrator projectMigrator = new ProjectMigrator();
-    projectMigrator.arguments(args);
-    projectMigrator.convert();
+    projectMigrator.convert(args);
   }
 
-  void arguments(String... args){
+  void convert(String[] args) throws ParserConfigurationException, ArchiveException, SAXException, TransformerException, IOException {
+    arguments(args);
+    convert(project, adapterPath, variablesPaths);
+  }
+
+  void arguments(String[] args){
     CommandLineParser parser = new DefaultParser();
     try {
       CommandLine line = parser.parse(options, args);
@@ -83,7 +87,7 @@ public class ProjectMigrator {
     }
   }
 
-  void convert() throws IOException, ParserConfigurationException, SAXException, ArchiveException, TransformerException {
+  void convert(String project, String adapterPath, String... variablesPaths) throws IOException, ParserConfigurationException, SAXException, ArchiveException, TransformerException {
     String xml = XmlUtils.resolveXincludes(readFile(adapterPath, StandardCharsets.UTF_8));
     Map<String, String> variables = new HashMap<>();
     for (String arg : variablesPaths){

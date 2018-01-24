@@ -29,6 +29,10 @@ public class ProjectMigratorTest {
     File adpXml = new File(this.getClass().getClassLoader().getResource("adapter.xml").getFile());
     File vars = new File(this.getClass().getClassLoader().getResource("variables.properties").getFile());
     Map<String, String> results  = projectMigrator.convert(projectMigrator.readFile(adpXml.getAbsolutePath(), StandardCharsets.UTF_8), projectMigrator.loadProperties(vars.getAbsolutePath()));
+    assertResults(results);
+  }
+
+  private void assertResults(Map<String, String > results ) {
     assertEquals(10, results.size());
     assertEquals("AMQ_USERNAME", results.get("/adapter/shared-components/connections/jms-connection[unique-id=\"jms-connection-AMQ\"]/user-name"));
     assertEquals("AMQ_HOST", results.get("/adapter/shared-components/connections/jms-connection[unique-id=\"jms-connection-AMQ\"]/vendor-implementation/broker-url"));
@@ -40,6 +44,5 @@ public class ProjectMigratorTest {
     assertEquals("SONIC_QUEUE", results.get("/adapter/channel-list/channel[unique-id=\"sleepy-murdock\"]/workflow-list/standard-workflow[unique-id=\"pedantic-lovelace\"]/producer/destination/destination"));
     assertEquals("SONIC_CLIENT_ID", results.get("/adapter/shared-components/connections/jms-connection[unique-id=\"jms-connection-SonicMQ\"]/client-id"));
     assertEquals("SONIC_PASSWORD", results.get("/adapter/shared-components/connections/jms-connection[unique-id=\"jms-connection-SonicMQ\"]/password"));
-
   }
 }

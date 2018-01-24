@@ -1,13 +1,15 @@
 package com.adaptris.utils;
 
-import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
@@ -33,7 +35,7 @@ public class XmlUtils {
     }
   }
 
-  static DocumentBuilderFactory newBuilderFactory() throws ParserConfigurationException {
+  private static DocumentBuilderFactory newBuilderFactory() throws ParserConfigurationException {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setXIncludeAware(true);
     dbf.setNamespaceAware(true);
