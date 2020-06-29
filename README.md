@@ -1,4 +1,4 @@
-# interlok-project-migrator [![Build Status](https://travis-ci.org/adaptris-labs/interlok-project-migrator.svg?branch=develop)](https://travis-ci.org/adaptris-labs/interlok-project-migrator) [![codecov](https://codecov.io/gh/adaptris-labs/interlok-project-migrator/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris-labs/interlok-project-migrator) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/8ee663bc89d14733bce1e99ba1aa9ea6)](https://www.codacy.com/app/adaptris-labs/interlok-project-migrator?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=adaptris-labs/interlok-project-migrator&amp;utm_campaign=Badge_Grade)
+# interlok-project-migrator [![Build Status](https://travis-ci.org/adaptris-labs/interlok-project-migrator.svg?branch=develop)](https://travis-ci.org/adaptris-labs/interlok-project-migrator) [![codecov](https://codecov.io/gh/adaptris-labs/interlok-project-migrator/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris-labs/interlok-project-migrator)
 
 Helper application that allows you to convert Interlok xml and variables into a project zip (introduced in 3.7).
 
