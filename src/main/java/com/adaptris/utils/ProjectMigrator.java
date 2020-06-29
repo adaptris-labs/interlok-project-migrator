@@ -1,9 +1,11 @@
 package com.adaptris.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONObject;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -102,9 +104,7 @@ public class ProjectMigrator {
     File projectJson = new File(buildDirectory, CONFIG_FILE);
     FileUtils.writeStringToFile(projectJson, createJson(project, variableXPaths), StandardCharsets.UTF_8);
     FileUtils.writeStringToFile(adapterFile, xml , StandardCharsets.UTF_8);
-    File zipFile = new File(OUTPUT_DIRECTORY + project + PROJECT_EXT);
-    ZipUtils.addFilesToZip(zipFile, projectJson, variablesFile, adapterFile);
-    System.out.println(String.format("Written to [%s]", zipFile.getAbsolutePath()));
+    System.out.println(String.format("Written to [%s]", buildDirectory));
   }
 
   Map<String, String> convert(String xml, Map<String, String> variables) throws ParserConfigurationException, SAXException, IOException {
@@ -150,19 +150,20 @@ public class ProjectMigrator {
   }
 
   @SuppressWarnings("unchecked")
-  String createJson(String project, Map<String, String> variableXPaths) {
-    JSONObject json = new JSONObject();
+  String createJson(String project, Map<String, String> variableXPaths) throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectNode json = mapper.createObjectNode();
     json.put("name", project);
-    json.put("xincludeXpaths", new JSONObject());
-    JSONObject variableSets = new JSONObject();
-    variableSets.put("default", new JSONObject());
-    json.put("variableSets", variableSets);
-    JSONObject vx = new JSONObject();
+    ObjectNode variableSets = mapper.createObjectNode();
+    json.set("variableSets", variableSets);
     for (Map.Entry<String, String> entry : variableXPaths.entrySet()){
-      vx.put(entry.getKey(), entry.getValue());
+      variableSets.put(entry.getKey(), entry.getValue());
     }
-    json.put("variableXpaths", vx);
-    return json.toJSONString();
+    json.set("variableXpaths", mapper.createObjectNode());
+    json.put("uidInXincludeCompntListFileName", false);
+    json.set("xincludeXpaths", mapper.createObjectNode());
+    json.put("structured", false);
+    return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
   }
 
 }
