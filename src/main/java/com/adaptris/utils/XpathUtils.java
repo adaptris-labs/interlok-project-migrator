@@ -7,9 +7,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
+import javax.print.Doc;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,22 +33,23 @@ public class XpathUtils {
   private XpathUtils(){
   }
 
-  public static List<String> getXPath(String file, String textContents) throws IOException, SAXException, ParserConfigurationException {
-    int count = StringUtils.countMatches(file, textContents);
+  public static Document createDocument(String file) throws IOException, SAXException, ParserConfigurationException {
     DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-    Document document = docBuilder.parse(new ByteArrayInputStream((file).getBytes()));
-    return getXPath(document, textContents, count);
+    return docBuilder.parse(new ByteArrayInputStream((file).getBytes()));
   }
 
-  private static List<String> getXPath(Document document, String textContents, int expectedCount) {
+  public static List<String> getXPath(Document document, String textContents, int expectedCount) {
     List<Node> nodes = new ArrayList<>();
     while(expectedCount != nodes.size()){
       nodes.add(getXPath(document.getDocumentElement(), textContents, nodes));
     }
     List<String> xpaths = new ArrayList<>();
     for (Node node : nodes){
-      xpaths.add(generateXPath(node));
+      String xpath = generateXPath(node);
+      if(!xpath.isEmpty()) {
+        xpaths.add(xpath);
+      }
     }
     return xpaths;
   }
@@ -51,7 +57,7 @@ public class XpathUtils {
   private static Node getXPath(Node root, String textContents, List<Node> foundNodes) {
     for (int i = 0; i < root.getChildNodes().getLength(); i++) {
       Node node = root.getChildNodes().item(i);
-      if (node instanceof Text && ((Text) node).getWholeText().equals(textContents) && !foundNodes.contains(node.getParentNode())){
+      if (node instanceof Text && ((Text) node).getWholeText().contains(textContents) && !foundNodes.contains(node.getParentNode())){
         return node.getParentNode();
       } else if (node instanceof Element && node.getChildNodes().getLength() > 0) {
         Node result = getXPath(node, textContents, foundNodes);
@@ -81,19 +87,29 @@ public class XpathUtils {
       }
     }
     int pos  = 0;
+    int siblings  = 0;
     if(node.getParentNode().getChildNodes().getLength() > 1 && uniqueId == null){
       for (int i = 0; i < node.getParentNode().getChildNodes().getLength(); i++) {
         Node child = node.getParentNode().getChildNodes().item(i);
         if(child instanceof Element){
           if (child.getNodeName().equals(node.getNodeName())){
-            pos++;
+            siblings++;
+          }
+          if (child.equals(node)){
+            pos = siblings;
           }
         }
       }
     }
     return generateXPath(parent) + "/" + node.getNodeName() +
         (uniqueId != null ? String.format("[" + UNIQUE_ID_KEY + "=\"%s\"]", uniqueId): "") +
-        (pos > 1 ? String.format("[%s]", pos) : "");
+        (siblings > 1 ? String.format("[%s]", pos) : "");
+  }
+
+  public static String evaluateXpath(Document xml, String expression) throws XPathExpressionException {
+    XPathFactory xpf = XPathFactory.newInstance();
+    XPath xpath = xpf.newXPath();
+    return (String) xpath.evaluate(expression, xml, XPathConstants.STRING);
   }
 
 }

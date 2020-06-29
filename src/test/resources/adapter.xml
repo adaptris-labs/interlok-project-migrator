@@ -106,7 +106,7 @@
                 <unique-id>kickass-lamarr</unique-id>
                 <metadata-element>
                   <key>addressFirstLine</key>
-                  <value>Flat 12</value>
+                  <value>Flat ${HOUSE_NUMBER}</value>
                 </metadata-element>
                 <metadata-element>
                   <key>addressSecondLine</key>
